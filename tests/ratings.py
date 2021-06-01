@@ -48,7 +48,10 @@ class RatingsTests(APITestCase):
         self.assertEqual(json_response["location"], "Pittsburgh")
 
     def test_create_rating(self):
-        """Ensure we can create a new rating"""
+        """
+        Ensure we can create a new rating,
+        THEN ensure the avg_rating key exists AND is correct.
+        """
         url = "/products/1/rate"
         data = {
             "score": 5
@@ -57,10 +60,8 @@ class RatingsTests(APITestCase):
         response = self.client.post(url, data, format='json')
         json_response = json.loads(response.content)
 
-        self.assertEqual(json_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_average_rating(self):
-        """Ensure the avg_rating key exists and is correct."""
         url="/products/1"
         response = self.client.get(url, None, format='json')
         json_response = json.loads(response.content)
