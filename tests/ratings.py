@@ -50,8 +50,18 @@ class RatingsTests(APITestCase):
     def test_create_rating(self):
         """Ensure we can create a new rating"""
         url = "/products/1/rate"
+        data = {
+            "score": 5
+        }
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
-        response = self.client.post(url)
+        response = self.client.post(url, data, format='json')
         json_response = json.loads(response.content)
 
-        self.assert_equal(json_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(json_response.status_code, status.HTTP_201_CREATED)
+
+    def test_average_rating(self):
+        """Ensure the avg_rating key exists and is correct."""
+        url="/products/1"
+        response = self.client.get(url, None, format='json')
+        json_response = json.loads(response.content)
+        self.assertEqual(json_response["average_rating"], 5)

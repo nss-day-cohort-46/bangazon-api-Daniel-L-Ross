@@ -315,7 +315,7 @@ class Products(ViewSet):
                 rating = Rating()
                 rating.customer = user
                 rating.product = Product.objects.get(pk=pk)
-
+                rating.score = request.data["score"]
                 rating.save()
 
             return Response(None, status=status.HTTP_201_CREATED)
