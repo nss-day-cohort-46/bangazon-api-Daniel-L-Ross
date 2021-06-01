@@ -1,3 +1,4 @@
+from bangazonapi.models.productrating import ProductRating
 import json
 import datetime
 from rest_framework import status
@@ -62,7 +63,14 @@ class RatingsTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+
+        # add another rating, then check the average
+        product_rating = ProductRating()
+        product_rating.product_id = 1
+        product_rating.customer_id = 2
+        product_rating.rating = 0
+        product_rating.save()
         url="/products/1"
         response = self.client.get(url, None, format='json')
         json_response = json.loads(response.content)
-        self.assertEqual(json_response["average_rating"], 5)
+        self.assertEqual(json_response["average_rating"], 2.5)
