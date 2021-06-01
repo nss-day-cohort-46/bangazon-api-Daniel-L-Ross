@@ -8,7 +8,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
-from bangazonapi.models import Product, Customer, ProductCategory, Rating, product
+from bangazonapi.models import Product, Customer, ProductCategory, ProductRating
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -304,19 +304,19 @@ class Products(ViewSet):
         if request.method == "POST":
             try:
                 # determine if the user has already rated the product
-                rating = Rating.objects.get(
+                product_rating = ProductRating.objects.get(
                     customer=user, product=pk)
                 return Response(
                     {'message': 'User has already rated this product.'},
                     status=status.HTTP_422_UNPROCESSABLE_ENTITY
                 )
-            except Rating.DoesNotExist:
+            except ProductRating.DoesNotExist:
                 # the user has not rated this product
-                rating = Rating()
-                rating.customer = user
-                rating.product = Product.objects.get(pk=pk)
-                rating.score = request.data["score"]
-                rating.save()
+                product_rating = ProductRating()
+                product_rating.customer = user
+                product_rating.product = Product.objects.get(pk=pk)
+                product_rating.rating = request.data["rating"]
+                product_rating.save()
 
             return Response('{}', status=status.HTTP_201_CREATED)
         

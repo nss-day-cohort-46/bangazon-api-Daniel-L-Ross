@@ -54,7 +54,7 @@ class RatingsTests(APITestCase):
         """
         url = "/products/1/rate"
         data = {
-            "score": 5
+            "rating": 5
         }
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
         response = self.client.post(url, data, format='json')
