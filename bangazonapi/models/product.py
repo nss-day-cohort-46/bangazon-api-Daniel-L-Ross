@@ -58,6 +58,8 @@ class Product(SafeDeleteModel):
             number -- The average rating for the product
         """
         ratings = ProductRating.objects.filter(product=self)
+        
+        #try/except block added to fix issue #15
         try:
             total_rating = 0
             for rating in ratings:

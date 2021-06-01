@@ -16,6 +16,7 @@ class Customer(models.Model):
     def recommends(self, value):
         self.__recommends = value
 
+    # added to fix issue #1
     @property
     def recommended(self):
         return self.__recommended
