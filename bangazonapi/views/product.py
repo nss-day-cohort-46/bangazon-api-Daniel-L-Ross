@@ -299,8 +299,25 @@ class Products(ViewSet):
     def rate(self, request, pk=None):
         """Rate a product"""
 
+        user = Customer.objects.get(user=request.auth.user)
+
         if request.method == "POST":
-            rating = Rating()
-            rating.customer = Customer.objects.get(user=request.auth.user)
-            rating.product = Product.objects.get(pk=pk)
-            
+            try:
+                # determine if the user has already rated the product
+                rating = Rating.objects.get(
+                    customer=user, product=pk)
+                return Response(
+                    {'message': 'User has already rated this product.'},
+                    status=status.HTTP_422_UNPROCESSABLE_ENTITY
+                )
+            except Rating.DoesNotExist:
+                # the user has not rated this product
+                rating = Rating()
+                rating.customer = user
+                rating.product = Product.objects.get(pk=pk)
+
+                rating.save()
+
+            return Response(None, status=status.HTTP_201_CREATED)
+        
+        return Response(None, status=status.HTTP_405_METHOD_NOT_ALLOWED)
