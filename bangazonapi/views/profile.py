@@ -77,13 +77,31 @@ class Profile(ViewSet):
                             }
                         }
                     }
+                ],
+                "recommended": [
+                    {
+                        "product": {
+                            "id": 50,
+                            "name": "Escalade EXT"
+                        },
+                        "recommender": {
+                            "id": 7,
+                            "user": {
+                                "first_name": "Brenda",
+                                "last_name": "Long",
+                                "email": "brenda@brendalong.com"
+                            }
+                        }
+                    }
                 ]
             }
         """
         try:
             current_user = Customer.objects.get(user=request.auth.user)
-            current_user.recommends = Recommendation.objects.filter(recommender=current_user)
-            current_user.recommended = Recommendation.objects.filter(customer_id=current_user)
+            current_user.recommends = Recommendation.objects.filter(
+                recommender=current_user)
+            current_user.recommended = Recommendation.objects.filter(
+                customer_id=current_user)
 
             serializer = ProfileSerializer(
                 current_user, many=False, context={'request': request})
@@ -364,6 +382,8 @@ class RecommenderSerializer(serializers.ModelSerializer):
         fields = ('product', 'customer',)
 
 # added to fix #1
+
+
 class RecommendedSerializer(serializers.ModelSerializer):
     """JSON serializer for recommendations"""
     recommender = CustomerSerializer()
