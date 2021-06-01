@@ -7,7 +7,7 @@ from rest_framework.test import APITestCase
 class RatingsTests(APITestCase):
     def setUp(self) -> None:
         """
-        Create a new account, sample category, sample product, and sample rating
+        Create a new account, sample category, and sample product
         """
         url = "/register"
         data = {"username": "steve", "password": "Admin8*", "email": "steve@stevebrownlee.com",
@@ -46,3 +46,12 @@ class RatingsTests(APITestCase):
         self.assertEqual(json_response["quantity"], 60)
         self.assertEqual(json_response["description"], "It flies high")
         self.assertEqual(json_response["location"], "Pittsburgh")
+
+    def test_create_rating(self):
+        """Ensure we can create a new rating"""
+        url = "/products/1/rate"
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        response = self.client.post(url)
+        json_response = json.loads(response.content)
+
+        self.assert_equal(json_response.status_code, status.HTTP_201_CREATED)
