@@ -34,11 +34,12 @@ def favorited_seller_list(request):
 
                 else:
                     favorited_seller_by_user[customer_id] = {}
+                    favorited_seller_by_user[customer_id]["customer_name"] = row["customer_name"]
                     favorited_seller_by_user[customer_id]['sellers'] = [row["seller_name"]]
 
         list_of_user_with_favorited_sellers = favorited_seller_by_user.values()
 
-        template = "/customers/list_with_favorited_sellers.html"
+        template = 'customers/list_with_favorited_sellers.html'
         context = {
             'favorited_sellers_list': list_of_user_with_favorited_sellers
         }
