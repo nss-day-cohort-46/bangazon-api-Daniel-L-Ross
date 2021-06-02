@@ -8,15 +8,15 @@
   <body>
     <h1>Favorited Sellers by User</h1>
 
-    {% comment %} {% for user in favorited_sellers_list %}
+ {% for user in favorited_sellers_list %}
         <h2>{{ user.customer_name }}</h2>
-        <ol>
+        <ul>
             {% for seller in user.sellers %}
             <li>
                 Seller: {{ seller }} 
             </li>
             {% endfor %}
-        </ol>
-    {% endfor %} {% endcomment %}
+        </ul>
+    {% endfor %}
   </body>
 </html>
