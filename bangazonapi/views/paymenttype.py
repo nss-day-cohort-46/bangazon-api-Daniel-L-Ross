@@ -67,7 +67,8 @@ class Payments(ViewSet):
             Response -- 200, 404, or 500 status code
         """
         try:
-            payment = Payment.objects.get(pk=pk)
+            customer = Customer.objects.get(user=request.auth.user)
+            payment = Payment.objects.get(pk=pk, customer=customer)
             payment.delete()
 
             return Response({}, status=status.HTTP_204_NO_CONTENT)
