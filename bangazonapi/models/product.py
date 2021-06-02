@@ -57,7 +57,7 @@ class Product(SafeDeleteModel):
         Returns:
             number -- The average rating for the product
         """
-        ratings = ProductRating.objects.filter(product=self)
+        ratings = ProductRating.objects.filter(product_id=self.pk)
         
         #try/except block added to fix issue #15
         try:

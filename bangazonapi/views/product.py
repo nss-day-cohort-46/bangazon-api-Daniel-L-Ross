@@ -8,7 +8,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework import status
-from bangazonapi.models import Product, Customer, ProductCategory
+from bangazonapi.models import Product, Customer, ProductCategory, ProductRating
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -293,3 +293,31 @@ class Products(ViewSet):
             return Response(None, status=status.HTTP_204_NO_CONTENT)
 
         return Response(None, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    # Custom action for url /product/n/rate to rate a product. for issue ticket #7
+    @action(methods=['post', 'put', 'delete'], detail=True)
+    def rate(self, request, pk=None):
+        """Rate a product"""
+
+        user = Customer.objects.get(user=request.auth.user)
+
+        if request.method == "POST":
+            try:
+                # determine if the user has already rated the product
+                product_rating = ProductRating.objects.get(
+                    customer=user, product=pk)
+                return Response(
+                    {'message': 'User has already rated this product.'},
+                    status=status.HTTP_422_UNPROCESSABLE_ENTITY
+                )
+            except ProductRating.DoesNotExist:
+                # the user has not rated this product
+                product_rating = ProductRating()
+                product_rating.customer = user
+                product_rating.product = Product.objects.get(pk=pk)
+                product_rating.rating = request.data["rating"]
+                product_rating.save()
+
+            return Response('{}', status=status.HTTP_201_CREATED)
+        
+        return Response('{}', status=status.HTTP_405_METHOD_NOT_ALLOWED)
