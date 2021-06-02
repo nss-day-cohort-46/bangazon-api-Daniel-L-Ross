@@ -17,7 +17,12 @@ class RatingsTests(APITestCase):
         json_response = json.loads(response.content)
         self.token = json_response["token"]
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
+        
+        # create a second user for averaging ratings
+        data = {"username": "smeve", "password": "Admin10*", "email": "smeve@stevebrownlee.com",
+                "address": "100 Infinity Way", "phone_number": "555-1212", "first_name": "Smeve", "last_name": "Brownlee"}
+        response = self.client.post(url, data, format='json')
+        
         url = "/productcategories"
         data = {"name": "Sporting Goods"}
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
