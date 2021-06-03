@@ -1,6 +1,7 @@
 import json
 from rest_framework import status
 from rest_framework.test import APITestCase
+from .payments import PaymentTests
 
 
 class OrderTests(APITestCase):
@@ -79,6 +80,17 @@ class OrderTests(APITestCase):
         self.assertEqual(json_response["size"], 0)
         self.assertEqual(len(json_response["lineitems"]), 0)
 
-    # TODO: Complete order by adding payment type
+    def test_complete_order(self):
+        """Ensure a payment type can be added to an order to close it"""
 
-    # TODO: New line item is not added to closed order
+        self.test_add_product_to_order()
+        self.test_add_product_to_order()
+        PaymentTests.test_create_payment_type()
+        url = "/orders/1"
+        data = {"payment_type": 1}
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+
+
+    def test_new_item_added_to_open_order(self):
+        """Ensure a new item is added to an open order, not a closed order"""
+
