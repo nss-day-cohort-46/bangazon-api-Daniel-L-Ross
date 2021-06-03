@@ -102,12 +102,17 @@ class Orders(ViewSet):
         @apiSuccessExample {json} Success
             HTTP/1.1 204 No Content
         """
-        customer = Customer.objects.get(user=request.auth.user)
-        order = Order.objects.get(pk=pk, customer=customer)
-        order.payment_type = request.data["payment_type"]
-        order.save()
+        try:
+            customer = Customer.objects.get(user=request.auth.user)
+            order = Order.objects.get(pk=pk, customer=customer)
+            payment_type = Payment.objects.get(id=int(request.data["payment_type"]), customer=customer)
+            order.payment_type = payment_type
+            order.save()
 
-        return Response({}, status=status.HTTP_204_NO_CONTENT)
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+        except Payment.DoesNotExist:
+            return Response({'message': 'Payment type does not exist'}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     def list(self, request):
         """
