@@ -1,4 +1,5 @@
 """View module for handling requests about products"""
+from django.core.exceptions import ValidationError
 from rest_framework.decorators import action
 from bangazonapi.models.recommendation import Recommendation
 import base64
@@ -90,6 +91,11 @@ class Products(ViewSet):
         new_product.description = request.data["description"]
         new_product.quantity = request.data["quantity"]
         new_product.location = request.data["location"]
+
+        try:
+            new_product.clean_fields()
+        except ValidationError as e:
+            return Response({'message': e.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         customer = Customer.objects.get(user=request.auth.user)
         new_product.customer = customer
