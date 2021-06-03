@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Bangazon Reports</title>
+  </head>
+  <body>
+    <h1>Expensive Products</h1>
+    <h2>All products priced at or over $1000</h2>
+ {% for product in expensive_products_list %}
+        <h2>{{ product.name }}</h2>
+        <ul>
+            <li>
+                Price: ${{ product.price }} 
+            </li>
+            <li>
+                Description: {{ product.description }} 
+            </li>
+            <li>
+                Porduct id: {{ product.product_id }} 
+            </li> 
+        </ul>
+    {% endfor %}
+  </body>
+</html>
