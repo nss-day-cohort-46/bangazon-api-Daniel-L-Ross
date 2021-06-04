@@ -1,6 +1,7 @@
 SELECT 
     b_o.id as order_id,
     a.first_name ||' '|| a.last_name as customer_name,
+    c.id as customer_id,
     pay.id as payment_type_id,
     pay.merchant_name as payment_card_type,
     SUM(p.price) as order_total
