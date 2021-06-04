@@ -1,4 +1,5 @@
 """View module for handling requests about products"""
+from bangazonapi.models.productlike import ProductLike
 from django.core.exceptions import ValidationError
 from rest_framework.decorators import action
 from bangazonapi.models.recommendation import Recommendation
@@ -333,8 +334,43 @@ class Products(ViewSet):
         
         return Response('{}', status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    @action(methods=['post', 'delete', 'get'], detail=True)
+    @action(methods=['post', 'delete'], detail=True)
     def like(self, request, pk=None):
-        """Like or dislike a product"""
+        """
+        Like or dislike a product
+                @apiSuccessExample {json} Success
+            {
+                "like": 1
+            }
+        """
+        user = Customer.objects.get(user=request.auth.user)
+        product = Product.objects.get(pk=pk)
+        preference = request.data["like"]
 
+        if request.method == "POST":
+            try:
+                product_preference = ProductLike.objects.get(customer=user, product=product)
+                product_preference.like = bool(preference)
+                product_preference.save()
+
+                return Response('{}', status=status.HTTP_201_CREATED)
+
+            except ProductLike.DoesNotExist:
+                product_preference = ProductLike()
+                product_preference.customer = user
+                product_preference.product = product
+                product_preference.like = bool(preference)
+                product_preference.save()            
+                
+                return Response('{}', status=status.HTTP_201_CREATED)
         
+        if request.method == "DELETE":
+
+            try:
+                product_preference = ProductLike.objects.get(customer=user, product=product)
+                product_preference.delete()
+
+                return
+
+            except ProductLike.DoesNotExist as ex:
+                return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
