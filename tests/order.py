@@ -1,6 +1,7 @@
 import json
-from rest_framework import status
+from rest_framework import response, status
 from rest_framework.test import APITestCase
+from .payments import PaymentTests
 
 
 class OrderTests(APITestCase):
@@ -76,9 +77,45 @@ class OrderTests(APITestCase):
         json_response = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
         self.assertEqual(json_response["size"], 0)
         self.assertEqual(len(json_response["lineitems"]), 0)
 
-    # TODO: Complete order by adding payment type
+    def test_complete_order(self):
+        """Ensure a payment type can be added to an order to close it"""
 
-    # TODO: New line item is not added to closed order
+        self.test_add_product_to_order()
+
+        PaymentTests.test_create_payment_type(self)
+        url = "/orders/1"
+        data = {"payment_type": 1}
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        response = self.client.get(url, None, format='json')
+        json_response = json.loads(response.content)
+
+        payment_type_endpoint = f'http://testserver/paymenttypes/{data["payment_type"]}'
+        self.assertEqual(json_response["payment_type"], payment_type_endpoint)
+
+
+
+    def test_new_item_added_to_open_order(self):
+        """Ensure a new item is added to an open order, not a closed order"""
+        
+        # Test runs, creating a new order and closing it
+        self.test_complete_order()
+
+        # add a new item to the cart
+        url = "/cart"
+        data = { "product_id": 1 }
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        self.client.post(url, data, format='json')
+
+        # get all items in cart, assert that only 1 item is in the order and there is no payment type. 
+        response = self.client.get("/cart")
+        json_response = json.loads(response.content)
+        self.assertEqual(len(json_response["lineitems"]), 1)
+        self.assertEqual(json_response["payment_type"], None)
+
