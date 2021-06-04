@@ -332,3 +332,9 @@ class Products(ViewSet):
             return Response('{}', status=status.HTTP_201_CREATED)
         
         return Response('{}', status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    @action(methods=['post', 'delete', 'get'], detail=True)
+    def like(self, request, pk=None):
+        """Like or dislike a product"""
+
+        
