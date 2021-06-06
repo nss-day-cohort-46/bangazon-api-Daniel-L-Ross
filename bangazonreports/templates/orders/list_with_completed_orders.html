@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Bangazon Reports</title>
+  </head>
+  <body>
+    <h1>Completed Orders</h1>
+
+ {% for order in completed_orders %}
+        <h2>Order #{{ order.order_id }} </h2>
+        <ul>
+            <li>
+                Customer: {{ order.customer_name }}
+            </li>
+            <li>
+                Payment total: ${{ order.order_total }} 
+            </li>
+            <li>
+                Payment type: {{ order.payment_card_type }} 
+            </li>
+        </ul>
+    {% endfor %}
+  </body>
+</html>
